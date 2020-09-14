@@ -1,0 +1,43 @@
+<script src='/socket.io/socket.io.js'></script>
+<script>
+    
+    const socket = io()
+    let box = document.getElementById(`box`)
+             
+    window.addEventListener(`click`, event => {
+        const x = event.clientX
+        const y = event.clientY
+            
+        socket.emit(`changeposition` ,{x, y})
+    })
+
+    socket.on(`newPosition`, (position) => {
+        console.log(position)
+        if(!document.getElementById(position.id))
+        {
+            const html = `<div id='${position.id}' class='box'></div>`
+            document.body.insertAdjacentHTML(`beforeend`, html);
+        }
+        const playerBox = document.getElementById(position.id);
+        playerBox.style.left = `${position.x}px`
+        playerBox.style.top = `${position.y}px`
+
+    })
+</script>
+
+<style>
+    #box
+    {
+        position: absolute;
+        height: 50px;
+        width: 50px;
+        background-color: red;
+        transition: all 0.5s;
+    }
+    .box{
+        position: absolute;
+        height: 50px;
+        width: 50px;
+        background-color: red;
+        transition: all 0.5s;    }
+</style>
