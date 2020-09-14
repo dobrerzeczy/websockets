@@ -1,0 +1,50 @@
+<!--
+    1. czerwony kwadracik na ekranie 50x50px
+    2. pozycjonowanie absolutne
+    3. obsłużenie kliknięcia na ekranie
+        przechwycenie koordynatów
+    4. wysłanie informacji do serwera że koordynaty się zmieniły
+    5. obsłużenie informacji z serwera że czyjś kwadrat zmienił koordynaty
+-->
+<div class="box"></div>
+<style>
+    .box {
+        background-color: red;
+        width: 50px;
+        height: 50px;
+
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+</style>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io();
+
+  socket.on('welcomeMessage', msg => {
+    console.log(msg);
+  });
+
+  socket.on('newPosition', ({ x, y, id }) => {
+    console.log(x, y, id);
+    if (!document.getElementById(id)) {
+        // tworzymy element
+        const html = `<div id="${id}" class="box"></div>`;
+        document.body.insertAdjacentHTML('beforeend', html);
+    }
+
+    // aktualizujemy jego pozycje
+    const playerBox = document.getElementById(id);
+    playerBox.style.left = `${x}px`;
+    playerBox.style.top = `${y}px`;
+  });
+
+  window.addEventListener('click', event => {
+    const x = event.clientX;
+    const y = event.clientY;
+
+    socket.emit('changePosition', { x, y });
+  });
+</script>
